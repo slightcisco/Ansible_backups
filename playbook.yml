@@ -1,0 +1,84 @@
+---
+- name: Backup devices from UKTME lab
+  hosts: testing
+  gather_facts: no
+  connection: local
+
+  tasks:
+          - name: SYS | Including vars from Passwords.yml
+            include_vars:
+              file: passwords.yml
+
+          - name: SYS | Getting ansible date/time
+            setup:
+              filter: "ansible_date_time"
+              gather_subset: "!all"
+
+          - name: SYS | Store DTG as fact
+            set_fact:
+              DTG: "{{ ansible_date_time.date }}"
+
+          - name: SYS | Define provider
+            set_fact:
+                  logins:
+                          host: "{{ ansible_host }}"
+                          username: "{{user}}"
+                          password: "{{pass}}"
+
+          - name: IOS | show run
+            register: show_run
+            ios_command:
+                  provider: "{{logins}}"
+                  commands: 
+                        - ter len 0
+                        - show run
+
+          - name: DEBUG | print show run
+            debug: msg="{{ show_run.stdout_lines[1] }}"
+
+          - name: IOS | Show Hostname
+            ios_command:
+              provider: "{{logins}}"
+              commands:
+                - ter len 0
+                - show run | inc hostname
+            register: hostname
+
+          - name: SYS | Creating directory
+            file:
+              path: ~/ansible/backups/{{DTG}}
+              state: directory
+
+          - name: DEBUG | Showing hostname
+            debug: msg="{{hostname}}"
+
+          - name: SYS | Getting name part of split
+            set_fact:
+              host: "{{hostname.stdout[1].split()[1]}}"
+
+          - name: SYS | Saving output
+            copy:
+              content: "{{show_run.stdout[1]}}"
+              dest: "~/ansible/backups/{{DTG}}/{{host}}.backup"
+
+          - name: DEBUG | Hosts list
+            debug: var=host_list
+
+          - name: Messaging teams
+            cisco_spark:
+              recipient_type: toPersonEmail
+              recipient_id: "slight@cisco.com"
+              message_type: text
+              personal_token: "ZmYwMjRmYjEtNWM4ZC00NGQ0LTk3NmMtNTZhZDE1ZmM0OTc4ZDEzMTk4OWUtMDhj_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f"
+              message: "The list of devices that has been backed up" 
+            run_once: yes
+
+          - name: Messaging on Webex Teams
+            cisco_spark:
+              recipient_type: toPersonEmail
+              recipient_id: "slight@cisco.com"
+              message_type: text
+              personal_token: "ZmYwMjRmYjEtNWM4ZC00NGQ0LTk3NmMtNTZhZDE1ZmM0OTc4ZDEzMTk4OWUtMDhj_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f"
+              message: "{{host}}" 
+...
+
