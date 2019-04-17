@@ -60,7 +60,7 @@
           - name: SYS | Saving output
             copy:
               content: "{{show_run.stdout[1]}}"
-              dest: "~/ansible/backups/{{DTG}}/{{host}}.backup"
+              dest: "/var/lib/awx/ansible/backups/{{DTG}}/{{host}}.backup"
 
           - name: DEBUG | Hosts list
             debug: var=host_list
