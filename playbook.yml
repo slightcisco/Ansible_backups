@@ -44,17 +44,15 @@
                 - show run | inc hostname
             register: hostname
           
-           - name: SYS | Creating directory
+          - name: SYS | Creating directory
             file:
               path: ~/ansible/
               state: directory
 
-            - name: SYS | Creating directory
+          - name: SYS | Creating directory
             file:
               path: ~/ansible/backups/
               state: directory
-              
-
 
           - name: SYS | Creating directory
             file:
