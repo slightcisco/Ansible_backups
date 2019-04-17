@@ -5,9 +5,9 @@
   connection: local
 
   tasks:
-          - name: SYS | Including vars from Passwords.yml
-            include_vars:
-              file: passwords.yml
+    #          - name: SYS | Including vars from Passwords.yml
+    #        include_vars:
+    #          file: passwords.yml
 
           - name: SYS | Getting ansible date/time
             setup:
