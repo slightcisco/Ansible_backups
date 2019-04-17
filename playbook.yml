@@ -46,18 +46,9 @@
           
           - name: SYS | Creating directory
             file:
-              path: ~/ansible/
-              state: directory
-
-          - name: SYS | Creating directory
-            file:
-              path: ~/ansible/backups/
-              state: directory
-
-          - name: SYS | Creating directory
-            file:
               path: ~/ansible/backups/{{DTG}}
               state: directory
+            become_user: root
 
           - name: DEBUG | Showing hostname
             debug: msg="{{hostname}}"
