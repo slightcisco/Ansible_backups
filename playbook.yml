@@ -1,6 +1,6 @@
 ---
 - name: Backup devices from UKTME lab
-  hosts: testing
+  hosts: all
   gather_facts: no
   connection: local
 
