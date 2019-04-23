@@ -1,0 +1,49 @@
+---
+- name: Backup devices from UKTME lab
+  hosts: all
+  gather_facts: no
+  connection: local
+
+  tasks:
+          - name: SYS | Including vars from Passwords.yml
+            include_vars:
+              file: passwords.yml
+
+          - name: SYS | Getting ansible date/time
+            setup:
+              filter: "ansible_date_time"
+              gather_subset: "!all"
+
+          - name: SYS | Store DTG as fact
+            set_fact:
+              DTG: "{{ ansible_date_time.date }}"
+
+          - name: SYS | Define provider
+            set_fact:
+                  logins:
+                          host: "{{ inventory_hostname }}"
+                          username: "{{user}}"
+                          password: "{{pass}}"
+
+          - name: IOS | Show Hostname
+            ios_command:
+              provider: "{{logins}}"
+              commands:
+                - ter len 0
+                - show run | inc hostname
+            register: hostname
+
+          - name: SYS | Getting name part of split
+            set_fact:
+              host: "{{hostname.stdout[1].split()[1]}}"
+
+          - name: IOS | backup to ftp
+            register: backup
+            ios_command:
+                  provider: "{{logins}}"
+                  commands:
+                    - 'conf t'
+                    - 'file prompt quiet'
+                    - 'end'
+                    - 'copy running-config flash:running-config.txt'
+                    - 'copy flash:running-config.txt ftp://10.52.248.78/config_backups/{{DTG}}-{{host}}.backup'

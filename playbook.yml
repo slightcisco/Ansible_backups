@@ -1,13 +1,13 @@
 ---
 - name: Backup devices from UKTME lab
-  hosts: all
+  hosts: testing
   gather_facts: no
   connection: local
 
   tasks:
-    #          - name: SYS | Including vars from Passwords.yml
-    #        include_vars:
-    #          file: passwords.yml
+          - name: SYS | Including vars from Passwords.yml
+            include_vars:
+              file: passwords.yml
 
           - name: SYS | Getting ansible date/time
             setup:
@@ -21,7 +21,7 @@
           - name: SYS | Define provider
             set_fact:
                   logins:
-                          host: "{{ ansible_host }}"
+                          host: "{{ inventory_hostname }}"
                           username: "{{user}}"
                           password: "{{pass}}"
 
@@ -29,12 +29,14 @@
             register: show_run
             ios_command:
                   provider: "{{logins}}"
-                  commands: 
+                  commands:
                         - ter len 0
                         - show run
+            when: not inventory_hostname == '10.52.248.78'
 
           - name: DEBUG | print show run
             debug: msg="{{ show_run.stdout_lines[1] }}"
+            when: not inventory_hostname == '10.52.248.78'
 
           - name: IOS | Show Hostname
             ios_command:
@@ -43,12 +45,14 @@
                 - ter len 0
                 - show run | inc hostname
             register: hostname
-          
+            when: not inventory_hostname == '10.52.248.78'
+
+
           - name: SYS | Creating directory
             file:
-              path: ~/ansible/backups/{{DTG}}
+              path: "/{{DTG}}"
               state: directory
-            become_user: root
+            when: inventory_hostname == '10.52.248.78'
 
           - name: DEBUG | Showing hostname
             debug: msg="{{hostname}}"
@@ -56,14 +60,19 @@
           - name: SYS | Getting name part of split
             set_fact:
               host: "{{hostname.stdout[1].split()[1]}}"
+            when: not inventory_hostname == '10.52.248.78'
 
           - name: SYS | Saving output
-            copy:
-              content: "{{show_run.stdout[1]}}"
-              dest: "/var/lib/awx/ansible/backups/{{DTG}}/{{host}}.backup"
+            net_put:
+              content: "{{ show_run.stdout_lines[1] }}"
+            when: inventory_hostname == '10.52.248.78'
+
+          - name: DEBUG | Printing inventory_hostname
+            debug: var=inventory_hostname
 
           - name: DEBUG | Hosts list
             debug: var=host_list
+            when: not inventory_hostname == '10.52.248.78'
 
           - name: Messaging teams
             cisco_spark:
@@ -73,6 +82,7 @@
               personal_token: "ZmYwMjRmYjEtNWM4ZC00NGQ0LTk3NmMtNTZhZDE1ZmM0OTc4ZDEzMTk4OWUtMDhj_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f"
               message: "The list of devices that has been backed up" 
             run_once: yes
+            when: not inventory_hostname == '10.52.248.78'
 
           - name: Messaging on Webex Teams
             cisco_spark:
@@ -81,5 +91,6 @@
               message_type: text
               personal_token: "ZmYwMjRmYjEtNWM4ZC00NGQ0LTk3NmMtNTZhZDE1ZmM0OTc4ZDEzMTk4OWUtMDhj_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f"
               message: "{{host}}" 
+            when: not inventory_hostname == '10.52.248.78'
 ...
 

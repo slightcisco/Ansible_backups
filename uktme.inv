@@ -1,10 +1,28 @@
 [all:children]
 labcata
 r01-tor
+r02-tor
+r03-tor
+r04-tor
+r05-tor
+r07-tor
+r08-tor
+r09-tor
+r11-tor
+r12-tor
+r14-tor
+r15-tor
+r23-tor
+r25-tor
+r28-tor
+r31-tor
 
 [testing:children]
 r01-tor
 r25-tor
+
+[ftp]
+10.52.248.78
 
 [labcata]
 10.52.204.1
