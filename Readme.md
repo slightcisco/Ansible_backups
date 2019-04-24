@@ -86,4 +86,4 @@ We can now paste the URL for this repo (`https://github.com/slightcisco/Ansible_
 
 It should look like the following:
 
-![Creating new project](https://github.com/slightcisco/Ansible_backups/pictures/new_project.png)
+![creating new project](https://github.com/slightcisco/Ansible_backups/blob/master/pictures/new_project.png)
