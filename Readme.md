@@ -87,3 +87,35 @@ We can now paste the URL for this repo (`https://github.com/slightcisco/Ansible_
 It should look like the following:
 
 ![creating new project](https://github.com/slightcisco/Ansible_backups/blob/master/pictures/new_project.png)
+
+The next thing you need to do is create an inventory.
+
+This is fairly straight forward. 
+
+You need to provide a name as well as an organisation.
+
+You then need to add a series of hosts which can be created in the inventory page.
+
+You then need to define 4 variables.
+
+These are `user pass api_key room_token`.
+
+User and pass are the username and password you provide when logging onto the ios devices.
+
+api_key is the key for the webex team bot.
+
+You can create your own or use mine `ZmYwMjRmYjEtNWM4ZC00NGQ0LTk3NmMtNTZhZDE1ZmM0OTc4ZDEzMTk4OWUtMDhj_PF84_1eb65fdf-9643-417f-9974-ad72cae0e10f`
+
+room_token is the token for the room you want the bot to post into.
+
+This can be found [here](https://developer.webex.com/docs/api/v1/rooms/get-room-details).
+
+The next thing to do is create a new job template.
+
+This is essentially the way that we can run the playbook.
+
+This is fairly straight forward and you should be able to see below for help.
+
+![template](https://github.com/slightcisco/Ansible_backups/blob/master/pictures/template.png)
+
+You can now setup a schedule for that job to run daily/weekly or however you like
